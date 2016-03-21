@@ -10,20 +10,16 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+// this is only handling the first 'NaN', then breaks
 app.post('/measurements', function(req, res){
   var data = req.body;
   for(var metric in data) {
     if (metric !== 'timestamp' && isNaN(data[metric])) {
-      
-      res.status(400).send('Invalid input: ' + metric + ' is not a number.');
-        console.log('NOT a number')
-    } else {
-        console.log('IS a number')
-        res.sendStatus(201);
-    };
-  };
+      console.log('Invalid: ' + metric + ' is not a number.')
+      res.sendStatus(400);
+    }
+  } res.end();
 });
-
 
 var server = app.listen(3000, function(){
   request ({
@@ -32,14 +28,13 @@ var server = app.listen(3000, function(){
         json: true,
         body: {
             timestamp: timeStamp,
-            temperature: 8,
-            dewPoint: 16.7,
+            temperature: 'not',
+            dewPoint:  9,
             precipitation: 0
         }},
     function(err, httpResponse, body) {
       console.log('Scenario 2 — Cannot Add Measurement w/ Invalid Values')
       console.log('Status Code: ', httpResponse.statusCode);
-      // console.log(httpResponse)
       console.log('-------------------------------------------------')
       server.close();
     }
